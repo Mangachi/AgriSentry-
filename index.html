@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriSentry — Sky to Soil Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Flight path progress line -->
+<div class="flightpath" aria-hidden="true">
+  <svg viewBox="0 0 4 100" preserveAspectRatio="none">
+    <line x1="2" y1="0" x2="2" y2="100" class="path-bg"/>
+    <line x1="2" y1="0" x2="2" y2="0" class="path-fg" id="pathFg"/>
+  </svg>
+  <div class="drone-marker" id="droneMarker">
+    <svg viewBox="0 0 40 40" width="28" height="28">
+      <g class="drone-icon">
+        <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="32" y1="8" x2="24" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="8" y1="32" x2="16" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="32" y1="32" x2="24" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="8" cy="8" r="4" fill="currentColor"/>
+        <circle cx="32" cy="8" r="4" fill="currentColor"/>
+        <circle cx="8" cy="32" r="4" fill="currentColor"/>
+        <circle cx="32" cy="32" r="4" fill="currentColor"/>
+        <rect x="16" y="16" width="8" height="8" rx="1.5" fill="currentColor"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-mark">
+    <svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true">
+      <path d="M20,4 C30,10 34,18 20,36 C6,18 10,10 20,4 Z" fill="var(--lime)"/>
+      <g stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" fill="none">
+        <line x1="9" y1="9" x2="15" y2="15"/>
+        <line x1="31" y1="9" x2="25" y2="15"/>
+        <line x1="9" y1="31" x2="15" y2="25"/>
+        <line x1="31" y1="31" x2="25" y2="25"/>
+      </g>
+      <g fill="var(--ink)">
+        <circle cx="9" cy="9" r="2.6"/>
+        <circle cx="31" cy="9" r="2.6"/>
+        <circle cx="9" cy="31" r="2.6"/>
+        <circle cx="31" cy="31" r="2.6"/>
+      </g>
+    </svg>
+    <span>AgriSentry</span>
+  </div>
+  <div class="nav-links">
+    <a href="#monitoring">Drone monitoring</a>
+    <a href="#bsf">BSF systems</a>
+    <a href="#compliance">Compliance</a>
+    <a href="#deliverables">Deliverables</a>
+    <a href="#contact" class="nav-cta">Talk to us</a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="hero">
+  <div class="hero-sky" aria-hidden="true">
+    <svg class="hero-field" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <pattern id="fieldRows" width="120" height="900" patternUnits="userSpaceOnUse">
+          <rect width="120" height="900" fill="transparent"/>
+          <rect x="0" width="56" height="900" fill="rgba(232,255,94,0.05)"/>
+        </pattern>
+      </defs>
+      <rect width="1440" height="900" fill="url(#fieldRows)"/>
+      <g class="ndvi-cells" id="ndviCells"></g>
+    </svg>
+    <svg class="hero-drone" viewBox="0 0 200 200" id="heroDrone">
+      <g class="hd-body">
+        <g class="hd-arm hd-arm-1">
+          <line x1="86" y1="86" x2="48" y2="48" stroke="#0B1F1A" stroke-width="3" stroke-linecap="round"/>
+          <g class="hd-rotor" transform="translate(48,48)">
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85"/>
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85" transform="rotate(90)"/>
+          </g>
+        </g>
+        <g class="hd-arm hd-arm-2">
+          <line x1="114" y1="86" x2="152" y2="48" stroke="#0B1F1A" stroke-width="3" stroke-linecap="round"/>
+          <g class="hd-rotor" transform="translate(152,48)">
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85"/>
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85" transform="rotate(90)"/>
+          </g>
+        </g>
+        <g class="hd-arm hd-arm-3">
+          <line x1="86" y1="114" x2="48" y2="152" stroke="#0B1F1A" stroke-width="3" stroke-linecap="round"/>
+          <g class="hd-rotor" transform="translate(48,152)">
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85"/>
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85" transform="rotate(90)"/>
+          </g>
+        </g>
+        <g class="hd-arm hd-arm-4">
+          <line x1="114" y1="114" x2="152" y2="152" stroke="#0B1F1A" stroke-width="3" stroke-linecap="round"/>
+          <g class="hd-rotor" transform="translate(152,152)">
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85"/>
+            <ellipse rx="16" ry="3.5" fill="#0B1F1A" opacity="0.85" transform="rotate(90)"/>
+          </g>
+        </g>
+        <rect x="78" y="78" width="44" height="44" rx="9" fill="#0B1F1A"/>
+        <rect x="92" y="118" width="16" height="9" rx="2" fill="#E8FF5E"/>
+        <circle cx="100" cy="92" r="5" fill="#E8FF5E" opacity="0.9"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <p class="eyebrow mono">Tanzania &mdash; Precision agro-environmental intelligence</p>
+    <h1 class="hero-title">
+      From the <span class="hl-sky">sky</span><br>
+      to the <span class="hl-soil">soil</span>.
+    </h1>
+    <p class="hero-sub">
+      AgriSentry pairs multispectral drone diagnostics with Black Soldier Fly
+      bioconversion &mdash; turning aerial data and organic waste into the inputs
+      your farm, mine site, or factory actually needs.
+    </p>
+    <div class="hero-actions">
+      <a href="#monitoring" class="btn btn-primary">Explore services</a>
+      <a href="#contact" class="btn btn-ghost">Request a survey</a>
+    </div>
+    <div class="hero-stats mono">
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">multispectral bands</span></div>
+      <div class="stat"><span class="stat-num">RTK</span><span class="stat-label">centimeter accuracy</span></div>
+      <div class="stat"><span class="stat-num">14d</span><span class="stat-label">BSF larval cycle</span></div>
+    </div>
+  </div>
+  <div class="scroll-cue mono" aria-hidden="true">Scroll &darr;</div>
+</header>
+
+<!-- INTRO / LOOP STATEMENT -->
+<section class="loop-statement">
+  <div class="loop-text">
+    <p class="loop-eyebrow mono">The loop</p>
+    <h2>One team, one data thread &mdash; sky to soil.</h2>
+    <p class="loop-body">
+      We fly multispectral missions over farms, mine concessions and
+      industrial sites to map crop stress, vegetation health and
+      environmental compliance risk. The organic waste streams from those
+      same operations feed our Black Soldier Fly colonies &mdash; producing
+      protein-rich larvae meal and frass fertilizer that return, informed by
+      the very maps we just flew, to the soil that needs them most.
+    </p>
+  </div>
+  <div class="loop-diagram" id="loopDiagram">
+    <svg viewBox="0 0 600 600" role="img" aria-label="Diagram showing the AgriSentry loop from drone survey to BSF processing to soil amendment and back to monitoring">
+      <defs>
+        <path id="loopPath" d="M300,80 A220,220 0 1 1 299,80" fill="none"/>
+      </defs>
+      <circle cx="300" cy="300" r="220" class="loop-ring" fill="none"/>
+      <circle cx="300" cy="300" r="220" class="loop-ring-anim" fill="none"/>
+
+      <!-- Node 1: drone -->
+      <g class="loop-node" transform="translate(300,80)">
+        <circle r="46" class="node-bg node-bg-1"/>
+        <g transform="translate(0,0)">
+          <g stroke="#0B1F1A" stroke-width="2" stroke-linecap="round" fill="none">
+            <line x1="-3" y1="-3" x2="-12" y2="-12"/>
+            <line x1="3" y1="-3" x2="12" y2="-12"/>
+            <line x1="-3" y1="3" x2="-12" y2="12"/>
+            <line x1="3" y1="3" x2="12" y2="12"/>
+          </g>
+          <g fill="#0B1F1A">
+            <circle cx="-12" cy="-12" r="3"/><circle cx="12" cy="-12" r="3"/>
+            <circle cx="-12" cy="12" r="3"/><circle cx="12" cy="12" r="3"/>
+          </g>
+          <rect x="-7" y="-7" width="14" height="14" rx="2" fill="#0B1F1A"/>
+        </g>
+        <text x="0" y="68" class="node-label" text-anchor="middle">Aerial survey</text>
+      </g>
+
+      <!-- Node 2: data/map -->
+      <g class="loop-node" transform="translate(497,236)">
+        <circle r="46" class="node-bg node-bg-2"/>
+        <g transform="translate(-16,-16)">
+          <rect width="32" height="32" rx="3" fill="none" stroke="#0B1F1A" stroke-width="2"/>
+          <rect x="4" y="4" width="10" height="10" fill="#0B1F1A" opacity="0.85"/>
+          <rect x="18" y="4" width="10" height="10" fill="#0B1F1A" opacity="0.4"/>
+          <rect x="4" y="18" width="10" height="10" fill="#0B1F1A" opacity="0.6"/>
+          <rect x="18" y="18" width="10" height="10" fill="#0B1F1A" opacity="0.25"/>
+        </g>
+        <text x="0" y="68" class="node-label" text-anchor="middle">NDVI &amp; risk maps</text>
+      </g>
+
+      <!-- Node 3: waste/feedstock -->
+      <g class="loop-node" transform="translate(420,452)">
+        <circle r="46" class="node-bg node-bg-3"/>
+        <g transform="translate(-16,-16)">
+          <path d="M2,28 L2,10 L30,10 L30,28 Z M2,10 L9,2 L23,2 L30,10" fill="none" stroke="#0B1F1A" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="9" y1="2" x2="9" y2="10" stroke="#0B1F1A" stroke-width="1.5"/>
+          <line x1="23" y1="2" x2="23" y2="10" stroke="#0B1F1A" stroke-width="1.5"/>
+        </g>
+        <text x="0" y="68" class="node-label" text-anchor="middle">Organic waste</text>
+      </g>
+
+      <!-- Node 4: BSF -->
+      <g class="loop-node" transform="translate(180,452)">
+        <circle r="46" class="node-bg node-bg-4"/>
+        <g transform="translate(-18,-12)">
+          <ellipse cx="18" cy="14" rx="16" ry="9" fill="none" stroke="#0B1F1A" stroke-width="2"/>
+          <path d="M2,14 Q-6,6 -10,8 M2,14 Q-6,22 -10,20" fill="none" stroke="#0B1F1A" stroke-width="1.5"/>
+          <circle cx="30" cy="12" r="1.6" fill="#0B1F1A"/>
+        </g>
+        <text x="0" y="68" class="node-label" text-anchor="middle">BSF bioconversion</text>
+      </g>
+
+      <!-- Node 5: outputs -->
+      <g class="loop-node" transform="translate(103,236)">
+        <circle r="46" class="node-bg node-bg-5"/>
+        <g transform="translate(-16,-16)">
+          <circle cx="9" cy="9" r="7" fill="none" stroke="#0B1F1A" stroke-width="2"/>
+          <circle cx="22" cy="9" r="7" fill="none" stroke="#0B1F1A" stroke-width="2"/>
+          <circle cx="15.5" cy="22" r="7" fill="none" stroke="#0B1F1A" stroke-width="2"/>
+        </g>
+        <text x="0" y="68" class="node-label" text-anchor="middle">Feed &amp; frass</text>
+      </g>
+
+      <!-- center label -->
+      <text x="300" y="294" class="loop-center-1" text-anchor="middle">AgriSentry</text>
+      <text x="300" y="318" class="loop-center-2 mono" text-anchor="middle">sky &rarr; soil &rarr; sky</text>
+    </svg>
+  </div>
+</section>
+
+<!-- DRONE MONITORING -->
+<section class="service" id="monitoring">
+  <div class="service-head">
+    <p class="eyebrow mono">01 &mdash; Aerial intelligence</p>
+    <h2>Multispectral drone monitoring</h2>
+    <p class="service-intro">
+      The DJI Mavic 3 Multispectral captures RGB plus four discrete
+      narrow-band sensors &mdash; green, red, red edge and near-infrared &mdash;
+      alongside an RTK module for survey-grade positioning. Every flight
+      produces a stack of geo-referenced outputs ready for analysis.
+    </p>
+  </div>
+
+  <div class="band-strip" id="bandStrip">
+    <div class="band-card" data-band="rgb">
+      <div class="band-vis band-rgb"></div>
+      <p class="band-name">RGB</p>
+      <p class="band-desc mono">Visible light &mdash; true-colour base map</p>
+    </div>
+    <div class="band-card" data-band="green">
+      <div class="band-vis band-green"></div>
+      <p class="band-name">Green &mdash; 560nm</p>
+      <p class="band-desc mono">Canopy reflectance, chlorophyll content</p>
+    </div>
+    <div class="band-card" data-band="red">
+      <div class="band-vis band-red"></div>
+      <p class="band-name">Red &mdash; 650nm</p>
+      <p class="band-desc mono">Chlorophyll absorption, plant stress</p>
+    </div>
+    <div class="band-card" data-band="rededge">
+      <div class="band-vis band-rededge"></div>
+      <p class="band-name">Red edge &mdash; 730nm</p>
+      <p class="band-desc mono">Early stress detection, nitrogen status</p>
+    </div>
+    <div class="band-card" data-band="nir">
+      <div class="band-vis band-nir"></div>
+      <p class="band-name">NIR &mdash; 840nm</p>
+      <p class="band-desc mono">Biomass, vegetation vigour</p>
+    </div>
+  </div>
+
+  <div class="deliverable-showcase">
+    <div class="showcase-visual">
+      <svg viewBox="0 0 560 420" id="ndviMap" role="img" aria-label="Sample NDVI vegetation index map showing healthy and stressed crop zones">
+        <rect width="560" height="420" rx="12" class="map-bg"/>
+        <g id="ndviGrid"></g>
+        <g class="map-frame" fill="none" stroke="var(--ink)" stroke-width="1" opacity="0.15">
+          <rect x="0.5" y="0.5" width="559" height="419" rx="12"/>
+        </g>
+        <g class="map-legend" transform="translate(24,360)">
+          <text class="ts-svg mono">NDVI</text>
+          <g transform="translate(0,14)">
+            <rect width="20" height="10" class="ndvi-c1"/>
+            <rect x="20" width="20" height="10" class="ndvi-c2"/>
+            <rect x="40" width="20" height="10" class="ndvi-c3"/>
+            <rect x="60" width="20" height="10" class="ndvi-c4"/>
+            <rect x="80" width="20" height="10" class="ndvi-c5"/>
+          </g>
+          <text x="0" y="40" class="ts-svg mono">0.1 low vigour</text>
+          <text x="100" y="40" class="ts-svg mono" text-anchor="end">0.9 high vigour</text>
+        </g>
+        <g class="map-coords mono" transform="translate(440,28)" text-anchor="end">
+          <text class="ts-svg">-3.3667&deg;, 36.6833&deg;</text>
+          <text y="16" class="ts-svg">alt 80m &middot; GSD 2.1cm/px</text>
+        </g>
+      </svg>
+    </div>
+    <div class="showcase-list">
+      <h3>What clients receive</h3>
+      <ul class="deliv-list">
+        <li><span class="d-icon">&#9673;</span><div><strong>NDVI / NDRE vigour maps</strong><span>Field-wide vegetation index rasters flagging stressed zones before they're visible to the eye</span></div></li>
+        <li><span class="d-icon">&#9673;</span><div><strong>Orthomosaic base maps</strong><span>Stitched, geo-referenced high-resolution imagery for boundary, area and asset mapping</span></div></li>
+        <li><span class="d-icon">&#9673;</span><div><strong>3D terrain &amp; volume models</strong><span>Digital surface models for drainage planning, stockpile volumes and erosion tracking</span></div></li>
+        <li><span class="d-icon">&#9673;</span><div><strong>Thermal &amp; multispectral stress indices</strong><span>Irrigation uniformity, water stress and early disease/pest hotspot identification</span></div></li>
+        <li><span class="d-icon">&#9673;</span><div><strong>Dust, noise &amp; visual compliance surveys</strong><span>Site-perimeter monitoring datasets formatted for EIA and NEMC reporting</span></div></li>
+        <li><span class="d-icon">&#9673;</span><div><strong>Time-series change detection</strong><span>Repeat-flight comparisons tracking growth stage, canopy change or land disturbance over time</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- BSF SYSTEMS -->
+<section class="service service-soil" id="bsf">
+  <div class="service-head">
+    <p class="eyebrow mono">02 &mdash; Circular bioconversion</p>
+    <h2>Black Soldier Fly systems</h2>
+    <p class="service-intro">
+      <em>Hermetia illucens</em> larvae convert organic waste streams &mdash;
+      market refuse, brewery spent grain, abattoir by-products &mdash; into two
+      high-value outputs in roughly two weeks: protein-rich larvae meal for
+      animal feed, and nutrient-dense frass for soil amendment.
+    </p>
+  </div>
+
+  <div class="bsf-cycle" id="bsfCycle">
+    <svg viewBox="0 0 1000 280" role="img" aria-label="Black Soldier Fly fourteen day life cycle diagram from egg to larvae to prepupa to adult fly">
+      <line x1="60" y1="220" x2="940" y2="220" class="cycle-line"/>
+      <g class="cycle-stage" data-day="0">
+        <circle cx="100" cy="220" r="5" class="cycle-dot"/>
+        <g transform="translate(60,90)">
+          <ellipse cx="20" cy="35" rx="22" ry="14" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+          <g fill="var(--ink)" opacity="0.7">
+            <ellipse cx="12" cy="33" rx="2.4" ry="4" transform="rotate(20 12 33)"/>
+            <ellipse cx="18" cy="36" rx="2.4" ry="4" transform="rotate(10 18 36)"/>
+            <ellipse cx="24" cy="33" rx="2.4" ry="4" transform="rotate(-10 24 33)"/>
+            <ellipse cx="30" cy="36" rx="2.4" ry="4" transform="rotate(-20 30 36)"/>
+          </g>
+        </g>
+        <text x="100" y="250" class="cycle-label mono" text-anchor="middle">Day 0</text>
+        <text x="100" y="266" class="cycle-sub" text-anchor="middle">Egg clusters laid</text>
+      </g>
+
+      <g class="cycle-stage" data-day="4">
+        <circle cx="320" cy="220" r="5" class="cycle-dot"/>
+        <g transform="translate(280,110)">
+          <path d="M0,30 Q20,10 40,30 Q55,42 75,30" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round"/>
+          <g fill="var(--ink)" opacity="0.5">
+            <line x1="6" y1="32" x2="6" y2="40" stroke="var(--ink)" stroke-width="1.2"/>
+            <line x1="20" y1="22" x2="20" y2="30" stroke="var(--ink)" stroke-width="1.2"/>
+            <line x1="40" y1="30" x2="40" y2="38" stroke="var(--ink)" stroke-width="1.2"/>
+            <line x1="58" y1="34" x2="58" y2="42" stroke="var(--ink)" stroke-width="1.2"/>
+          </g>
+        </g>
+        <text x="320" y="250" class="cycle-label mono" text-anchor="middle">Day 4&ndash;14</text>
+        <text x="320" y="266" class="cycle-sub" text-anchor="middle">Larval feeding stage</text>
+      </g>
+
+      <g class="cycle-stage" data-day="14">
+        <circle cx="540" cy="220" r="5" class="cycle-dot"/>
+        <g transform="translate(500,105)">
+          <path d="M0,35 Q22,8 44,35 Q60,50 84,35" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M0,35 Q22,8 44,35 Q60,50 84,35" fill="none" stroke="var(--lime)" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        </g>
+        <text x="540" y="250" class="cycle-label mono" text-anchor="middle">Day 14</text>
+        <text x="540" y="266" class="cycle-sub" text-anchor="middle">Harvest &mdash; larvae &amp; frass</text>
+      </g>
+
+      <g class="cycle-stage" data-day="18">
+        <circle cx="760" cy="220" r="5" class="cycle-dot"/>
+        <g transform="translate(720,100)">
+          <ellipse cx="30" cy="40" rx="10" ry="22" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        </g>
+        <text x="760" y="250" class="cycle-label mono" text-anchor="middle">Day 18</text>
+        <text x="760" y="266" class="cycle-sub" text-anchor="middle">Pupation</text>
+      </g>
+
+      <g class="cycle-stage" data-day="24">
+        <circle cx="940" cy="220" r="5" class="cycle-dot"/>
+        <g transform="translate(900,90)">
+          <ellipse cx="20" cy="30" rx="8" ry="18" fill="none" stroke="var(--ink)" stroke-width="2"/>
+          <path d="M20,18 Q-2,8 -10,16 M20,18 Q42,8 50,16" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+          <path d="M20,30 Q-4,30 -12,38 M20,30 Q44,30 52,38" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        </g>
+        <text x="940" y="250" class="cycle-label mono" text-anchor="middle">Day 24+</text>
+        <text x="940" y="266" class="cycle-sub" text-anchor="middle">Breeding adults emerge</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="bsf-outputs">
+    <div class="output-card">
+      <div class="output-visual output-feed">
+        <svg viewBox="0 0 200 160" aria-hidden="true">
+          <rect width="200" height="160" rx="10" class="output-bg-1"/>
+          <g transform="translate(100,80)">
+            <g class="larva-grid">
+              <ellipse cx="-50" cy="-30" rx="22" ry="9" class="larva" transform="rotate(-8 -50 -30)"/>
+              <ellipse cx="-10" cy="-40" rx="22" ry="9" class="larva" transform="rotate(5 -10 -40)"/>
+              <ellipse cx="35" cy="-25" rx="22" ry="9" class="larva" transform="rotate(-12 35 -25)"/>
+              <ellipse cx="-35" cy="5" rx="22" ry="9" class="larva" transform="rotate(10 -35 5)"/>
+              <ellipse cx="15" cy="10" rx="22" ry="9" class="larva" transform="rotate(-4 15 10)"/>
+              <ellipse cx="55" cy="0" rx="22" ry="9" class="larva" transform="rotate(15 55 0)"/>
+              <ellipse cx="-15" cy="40" rx="22" ry="9" class="larva" transform="rotate(-10 -15 40)"/>
+              <ellipse cx="40" cy="45" rx="22" ry="9" class="larva" transform="rotate(8 40 45)"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <h4>Larvae meal</h4>
+      <p>40&ndash;45% crude protein, lauric-acid rich &mdash; a fishmeal and soymeal substitute for poultry, fish and pig feed formulations.</p>
+    </div>
+    <div class="output-card">
+      <div class="output-visual output-frass">
+        <svg viewBox="0 0 200 160" aria-hidden="true">
+          <rect width="200" height="160" rx="10" class="output-bg-2"/>
+          <g class="frass-grain">
+            <circle cx="40" cy="40" r="4"/><circle cx="70" cy="55" r="3"/><circle cx="100" cy="35" r="5"/>
+            <circle cx="130" cy="60" r="3.5"/><circle cx="160" cy="40" r="4"/><circle cx="55" cy="90" r="4.5"/>
+            <circle cx="90" cy="100" r="3"/><circle cx="125" cy="95" r="4"/><circle cx="155" cy="110" r="3.5"/>
+            <circle cx="35" cy="120" r="3"/><circle cx="75" cy="130" r="4"/><circle cx="110" cy="125" r="3"/>
+            <circle cx="145" cy="75" r="3"/><circle cx="20" cy="65" r="3.5"/><circle cx="175" cy="80" r="3"/>
+          </g>
+        </svg>
+      </div>
+      <h4>Frass fertilizer</h4>
+      <p>Chitin-rich organic soil amendment that improves structure, microbial activity and nutrient availability &mdash; targeted using drone-mapped deficiency zones.</p>
+    </div>
+    <div class="output-card">
+      <div class="output-visual output-waste">
+        <svg viewBox="0 0 200 160" aria-hidden="true">
+          <rect width="200" height="160" rx="10" class="output-bg-3"/>
+          <defs>
+            <marker id="smallArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M1,1 L7,5 L1,9" fill="none" stroke="var(--lime-deep)" stroke-width="1.5"/>
+            </marker>
+          </defs>
+          <g transform="translate(100,95)" stroke="var(--ink)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M-45,-30 L45,-30 L38,35 L-38,35 Z"/>
+            <path d="M-32,-30 L-22,-48 L22,-48 L32,-30"/>
+          </g>
+          <g class="cycle-arrows" stroke="var(--lime-deep)" stroke-width="2" fill="none">
+            <path d="M-50,40 A55,55 0 1 1 50,40" transform="translate(100,50)" marker-end="url(#smallArrow)"/>
+          </g>
+        </svg>
+      </div>
+      <h4>Waste intake</h4>
+      <p>Market organics, brewery spent grain and agro-processing residues diverted from landfill and converted within 24&ndash;48 hours of collection.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPLIANCE -->
+<section class="service" id="compliance">
+  <div class="service-head">
+    <p class="eyebrow mono">03 &mdash; Regulatory &amp; institutional</p>
+    <h2>Environmental compliance monitoring</h2>
+    <p class="service-intro">
+      Backed by OHS certification and licensed drone operation, we deliver
+      monitoring datasets formatted for EIA submissions, NEMC reporting and
+      ongoing compliance audits &mdash; air quality, noise, vibration and water
+      quality, cross-referenced with aerial imagery.
+    </p>
+  </div>
+
+  <div class="compliance-grid">
+    <div class="comp-card">
+      <svg viewBox="0 0 60 60" class="comp-icon" aria-hidden="true">
+        <circle cx="30" cy="30" r="3" fill="var(--ink)"/>
+        <circle cx="30" cy="30" r="12" fill="none" stroke="var(--ink)" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="30" cy="30" r="22" fill="none" stroke="var(--ink)" stroke-width="1.5" opacity="0.3"/>
+      </svg>
+      <h4>Air quality</h4>
+      <p>PM2.5 / PM10 dust dispersion mapping around mining, quarrying and construction sites, cross-referenced with wind data.</p>
+    </div>
+    <div class="comp-card">
+      <svg viewBox="0 0 60 60" class="comp-icon" aria-hidden="true">
+        <path d="M8,40 Q14,20 20,40 Q26,10 32,40 Q38,15 44,40 Q50,25 52,40" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <h4>Noise &amp; vibration</h4>
+      <p>Perimeter sound-level surveys and blast vibration monitoring for industrial and extraction operations near communities.</p>
+    </div>
+    <div class="comp-card">
+      <svg viewBox="0 0 60 60" class="comp-icon" aria-hidden="true">
+        <path d="M30,8 C40,24 48,34 48,42 A18,18 0 0 1 12,42 C12,34 20,24 30,8 Z" fill="none" stroke="var(--ink)" stroke-width="2"/>
+      </svg>
+      <h4>Water quality</h4>
+      <p>Surface water sampling and turbidity assessment near tailings, runoff zones and downstream community intake points.</p>
+    </div>
+    <div class="comp-card">
+      <svg viewBox="0 0 60 60" class="comp-icon" aria-hidden="true">
+        <rect x="10" y="10" width="40" height="40" rx="3" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="18" y1="22" x2="42" y2="22" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="18" y1="32" x2="42" y2="32" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="18" y1="42" x2="34" y2="42" stroke="var(--ink)" stroke-width="2"/>
+      </svg>
+      <h4>EIA &amp; audit reporting</h4>
+      <p>Survey data packaged into NEMC-aligned reports, repeat-flight baselines and third-party verification records.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DELIVERABLES -->
+<section class="deliverables" id="deliverables">
+  <div class="service-head">
+    <p class="eyebrow mono">From the Mavic 3 Multispectral</p>
+    <h2>Every flight, five outputs</h2>
+    <p class="service-intro">
+      A single mission captures synchronized RGB and four-band multispectral
+      imagery with RTK-tagged positioning &mdash; processed into the products
+      below.
+    </p>
+  </div>
+  <div class="deliv-cards">
+    <div class="dcard">
+      <div class="dcard-vis">
+        <svg viewBox="0 0 200 140" aria-hidden="true">
+          <rect width="200" height="140" class="dvbg"/>
+          <g id="orthoGrid"></g>
+        </svg>
+      </div>
+      <h4>Orthomosaic</h4>
+      <p class="mono">cm-level base map &mdash; boundaries, assets, land use</p>
+    </div>
+    <div class="dcard">
+      <div class="dcard-vis">
+        <svg viewBox="0 0 200 140" aria-hidden="true">
+          <rect width="200" height="140" class="dvbg"/>
+          <g id="ndviSmall"></g>
+        </svg>
+      </div>
+      <h4>NDVI / NDRE index</h4>
+      <p class="mono">vegetation health &amp; stress classification</p>
+    </div>
+    <div class="dcard">
+      <div class="dcard-vis">
+        <svg viewBox="0 0 200 140" aria-hidden="true">
+          <rect width="200" height="140" class="dvbg"/>
+          <g class="contour-vis" stroke="var(--lime)" fill="none" stroke-width="1">
+            <ellipse cx="100" cy="70" rx="80" ry="50" opacity="0.3"/>
+            <ellipse cx="100" cy="70" rx="62" ry="38" opacity="0.42"/>
+            <ellipse cx="100" cy="70" rx="44" ry="27" opacity="0.55"/>
+            <ellipse cx="100" cy="70" rx="26" ry="16" opacity="0.7"/>
+            <ellipse cx="100" cy="70" rx="10" ry="6" opacity="0.9"/>
+          </g>
+        </svg>
+      </div>
+      <h4>3D / DSM terrain model</h4>
+      <p class="mono">elevation, drainage &amp; volume calculations</p>
+    </div>
+    <div class="dcard">
+      <div class="dcard-vis">
+        <svg viewBox="0 0 200 140" aria-hidden="true">
+          <rect width="200" height="140" class="dvbg-dark"/>
+          <g id="stressMap"></g>
+        </svg>
+      </div>
+      <h4>Stress / anomaly map</h4>
+      <p class="mono">irrigation gaps, pest &amp; disease hotspots</p>
+    </div>
+    <div class="dcard">
+      <div class="dcard-vis">
+        <svg viewBox="0 0 200 140" aria-hidden="true">
+          <rect width="200" height="140" class="dvbg"/>
+          <g id="changeMap"></g>
+        </svg>
+      </div>
+      <h4>Time-series change</h4>
+      <p class="mono">repeat-flight comparison over the season</p>
+    </div>
+    <div class="dcard">
+      <div class="dcard-vis">
+        <svg viewBox="0 0 200 140" aria-hidden="true">
+          <rect width="200" height="140" class="dvbg"/>
+          <g transform="translate(100,70)">
+            <circle r="50" fill="none" stroke="var(--lime)" stroke-width="1" opacity="0.35"/>
+            <circle r="30" fill="none" stroke="var(--lime)" stroke-width="1" opacity="0.5"/>
+            <line x1="-60" y1="0" x2="60" y2="0" stroke="var(--lime)" stroke-width="0.5" opacity="0.25"/>
+            <line x1="0" y1="-60" x2="0" y2="60" stroke="var(--lime)" stroke-width="0.5" opacity="0.25"/>
+            <g class="dust-pts" fill="var(--terracotta)">
+              <circle cx="-8" cy="-4" r="2.5"/><circle cx="12" cy="6" r="3"/><circle cx="-2" cy="14" r="2.2"/>
+              <circle cx="20" cy="-10" r="2.5"/><circle cx="-18" cy="8" r="2"/><circle cx="6" cy="-16" r="2.5"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <h4>Compliance overlay</h4>
+      <p class="mono">dust / disturbance footprint vs site boundary</p>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section class="clients">
+  <div class="service-head">
+    <p class="eyebrow mono">Built for</p>
+    <h2>Who we work with</h2>
+  </div>
+  <div class="client-grid">
+    <div class="client-col">
+      <h3>Tanzania</h3>
+      <ul>
+        <li>Mining &amp; extraction sites (EIA, dust &amp; tailings monitoring)</li>
+        <li>Infrastructure &amp; construction contractors</li>
+        <li>Export horticulture &amp; agribusiness farms</li>
+        <li>Poultry &amp; aquaculture feed manufacturers</li>
+        <li>Municipal markets &amp; agro-processors</li>
+        <li>Local government &amp; land-use authorities</li>
+      </ul>
+    </div>
+    <div class="client-col">
+      <h3>International</h3>
+      <ul>
+        <li>NGOs &amp; development agencies (FAO, GIZ, USAID, AGRA)</li>
+        <li>Climate &amp; circular-economy impact investors</li>
+        <li>EU / regional animal feed manufacturers</li>
+        <li>Sustainability-certified export buyers</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<footer class="contact" id="contact">
+  <div class="contact-inner">
+    <p class="eyebrow mono">Get in touch</p>
+    <h2>Plan a survey, pilot a system.</h2>
+    <p class="contact-sub">
+      Whether it's a single diagnostic flight or a full closed-loop pilot,
+      we scope every engagement against your site, your timeline and your
+      compliance requirements.
+    </p>
+    <a href="mailto:hello@agrisentry.co.tz" class="btn btn-primary btn-lg">hello@agrisentry.co.tz</a>
+  </div>
+  <div class="contact-foot mono">
+    <span>AgriSentry &mdash; Sky to Soil Intelligence</span>
+    <span>Arusha, Tanzania</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
